@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор сказок</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>✨ Создай свою сказку ✨</h1>
+
+        <input type="text" id="theme" placeholder="Например: волшебный лес и дракон">
+        <button onclick="generate()">Создать сказку</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function generate() {
+            const themeInput = document.getElementById("theme");
+            const resultDiv = document.getElementById("result");
+            const theme = themeInput.value.trim();
+
+            if (!theme) {
+                resultDiv.innerText = "Введите тему сказки.";
+                return;
+            }
+
+            resultDiv.innerText = "Генерируем сказку и картинки...";
+
+            try {
+                const response = await fetch("/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ theme })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    resultDiv.innerText = data.error;
+                } else {
+                    resultDiv.innerHTML = `<p class='result-text'>${data.text}</p>` +
+                        data.images.map(url => `<img src="${url}" class='result-img'/>`).join("");
+                }
+
+            } catch (error) {
+                resultDiv.innerText = "Ошибка подключения к серверу.";
+            }
+        }
+    </script>
+</body>
+
+</html>
