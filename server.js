@@ -23,7 +23,7 @@ async function getAccessToken() {
     if (accessToken && Date.now() < tokenExpiresAt) {
         return accessToken;
     }
-
+    
     try {
         const response = await axios.post(
             "https://ngw.devices.sberbank.ru:9443/api/v2/oauth",
@@ -55,11 +55,10 @@ async function generateImagesPixazo(prompt) {
             "https://gateway.pixazo.ai/getImage/v1/getSDXLImage",
             {
                 prompt: prompt,
-                negative_prompt: "Low-quality, blurry image, avoid cartoonish styles, unnecessary objects, harsh lighting",
-                height: 1024,
-                width: 1024,
-                num_steps: 20,
-                guidance_scale: 5,
+                height: 768,
+                width: 768,
+                num_steps: 50,
+                guidance_scale: 7.5,
                 seed: Math.floor(Math.random() * 1000)
             },
             {
@@ -87,7 +86,6 @@ app.post("/generate", async (req, res) => {
             {
                 model: "GigaChat",
                 messages: [{ role: "user", content: `Напиши короткую сказку (5-10 предложений) на тему: ${theme}` }],
-                temperature: 0.7
             },
             {
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
